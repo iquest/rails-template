@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 STDOUT.sync = true
 set :stages, %w(production)
 set :default_stage, 'production'

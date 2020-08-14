@@ -1,5 +1,5 @@
-import 'styles/admin'
-
-import '../js/base'
+import '../src/rails'
+import '../src/bootstrap'
+import '../stylesheets/admin'
 import 'admin-lte'
-import '../js/admin/sidebar'
+import '../src/admin/sidebar'

@@ -3,9 +3,9 @@
 require "fileutils"
 require "shellwords"
 
-# required gems
+
 begin
-  require 'byebug'
+  require 'byebug' # template debugging
 rescue LoadError
   require 'bundler/inline'
 
@@ -59,12 +59,13 @@ def add_base_gems
   gem 'sidekiq', '~> 6.0', '>= 6.0.3'
   gem 'image_processing'
   gem 'default_value_for'
-  gem "puma-heroku", group: :production
   gem "oj"
   gem "pagy"
-  gem "rails-i18n"
+  gem 'rails-i18n', '~> 6.0.0'
   gem "dry-core"
-  gem "dry-types"
+  gem "dry-types", '~> 1.2'
+  gem "puma-heroku"
+  gem 'heroku-deflater', group: :production
 
   gem_group :development do
     gem 'pry-rails'
@@ -92,11 +93,13 @@ end
 
 def add_pagy
   gem "pagy"
-  inject_into_class "app/controllers/application_controller.rb", 'ApplicationController' do
-    'include Pagy::Backend'
-  end
-  insert_into_file "app/controllers/application_controller.rb", after: /module ApplicationHelper/ do
-    'include Pagy::Frontend'
+  after_bundle do
+    inject_into_class "app/controllers/application_controller.rb", ApplicationController do
+      '  include Pagy::Backend'
+    end
+    inject_into_module "app/helpers/application_helper.rb", ApplicationHelper do
+      '  include Pagy::Frontend'
+    end
   end
 end
 
@@ -131,7 +134,7 @@ def add_devise
     # Install Devise
     generate "devise:install"
     generate "devise:controller auth"
-    generate "devise:views auth"
+    generate "devise:i18n:views auth"
 
     # Configure Devise
     environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
@@ -159,17 +162,6 @@ end
 
 def add_javascript
   run "yarn add expose-loader jquery popper.js bootstrap data-confirm-modal local-time"
-
-  content = <<~JS
-    const webpack = require('webpack')
-    environment.plugins.append('Provide', new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      Rails: '@rails/ujs'
-    }))
-  JS
-
-  inject_into_file 'config/webpack/environment.js', content + "\n", before: "module.exports = environment"
 end
 
 def remove_sprockets
@@ -185,7 +177,7 @@ def copy_templates
 
   directory "app", force: true
   directory "config", force: true
-  directory "lib", force: true
+  # directory "lib", force: true
 end
 
 def add_simple_form
@@ -238,6 +230,13 @@ def add_draper
   gem 'draper'
   after_bundle do
     generate 'draper:install'
+    inject_into_class "app/decorators/application_decorator.rb", ApplicationDecorator do
+      <<-CODE
+      def self.delegate_all
+        raise "Do not use delegate_all it is slow, delegate expicit methods"
+      end
+      CODE
+    end
   end
 end
 
@@ -258,7 +257,7 @@ end
 
 def add_admin
   after_bundle do
-    run "yarn add admin-lte@^3.0.0-beta.1 daterangepicker@^3.0.5 moment-timezone tempusdominus-core"
+    run "yarn add admin-lte@^3.0 daterangepicker@^3.0 moment-timezone tempusdominus-core"
   end
 
   route <<-ROUTE
@@ -271,20 +270,6 @@ end
 def add_bullet
   gem_group :development do
     gem 'bullet'
-  end
-
-  after_bundle do
-    initializer 'bullet.rb', <<-CODE
-      # frozen_string_literal: true
-
-      if Rails.env.development?
-        Bullet.enable = true
-        Bullet.console = true
-        Bullet.rails_logger = true
-        Bullet.add_footer = true
-        Bullet.skip_html_injection = false
-      end
-    CODE
   end
 end
 
@@ -301,7 +286,7 @@ add_template_repository_to_source_path
 
 add_base_gems
 
-after_bundle do
+# after_bundle do
   set_application_name
   stop_spring
   add_draper
@@ -319,6 +304,7 @@ after_bundle do
   add_admin
   add_seeds
 
+after_bundle do
   # Migrate
   rails_command "db:create"
   rails_command "active_storage:install"

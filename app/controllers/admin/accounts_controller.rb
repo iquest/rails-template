@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Admin::AccountsController < Admin::BaseController
   def edit
   end
