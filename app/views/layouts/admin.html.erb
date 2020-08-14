@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+  <meta content="webkit" name="renderer" />
+  <meta content="on" http-equiv="cleartype" />
+  <meta content="True" name="HandheldFriendly" />
+  <meta content="320" name="MobileOptimized" />
+  <meta content="no-cache" name="turbolinks-cache-control" />
+  <title>
+    <% if content_for?(:title) %>
+    <%= yield(:title) %>
+    <% else %>
+    <% app_name %>
+    <% end %>
+  </title>
+  <%= csrf_meta_tags %>
+  <%= action_cable_meta_tag %>
+  <%= content_for?(:head) ? yield(:head) : '' %>
+  <%= stylesheet_pack_tag 'admin', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'admin', 'data-turbolinks-track': 'reload' %>
+  <%= favicon_link_tag asset_pack_path("media/images/favicon.ico") %>
+</head>
+
+<body class="<%= body_class %>">
+  <main class="wrapper">
+    <%= render 'application/admin/header')) %>
+    <%= render 'application/admin/sidebar')) %>
+    <div class="content-wrapper">
+      <section class="content-messages">
+        <%= render 'application/admin/flash_messages')) %>
+      </section>
+      <section class="content-header">
+      </section>
+      <section class="content">
+        <%= yield %>
+      </section>
+    </div>
+    <aside class="control-sidebar control-sidebar-dark">
+      <!--Control sidebar content goes here-->
+      <div class="p-3">
+        <h5>Title</h5>
+        <p>Sidebar content</p>
+      </div>
+    </aside>
+    <!--/.control-sidebar-->
+    <!--Main Footer-->
+    <footer class="main-footer">
+      <!--To the right-->
+      <div class="float-right d-none d-sm-inline">
+        Right footer content
+      </div>
+      <!--Default to the left-->
+      <strong>
+        iQuest s.r.o. 2006 - <%= Time.current.year %>
+      </strong>Theme by AdminLTE.io
+    </footer>
+  </main>
+  <% end %>
+</body>
+
+</html>

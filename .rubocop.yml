@@ -1,0 +1,37 @@
+inherit_gem:
+  relaxed-rubocop: .rubocop.yml
+require:
+  - rubocop-rails
+  - rubocop-sequel
+Metrics/BlockLength:
+  Exclude:
+    - 'db/migrate/*'
+    - 'db/schema.rb'
+    - 'Rakefile'
+    - '**/*.rake'
+    - 'test/**/*.rb'
+    - 'config/**/*.rb'
+Style/ClassAndModuleChildren:
+  Exclude:
+    - 'test/**/*.rb'
+Rails/CreateTableWithTimestamps:
+  Enabled: false
+Sequel/ColumnDefault:
+  Enabled: false
+# don't use AR specific cops
+Rails/ActiveRecordAliases:
+  Enabled: false
+Rails/ActiveRecordOverride:
+  Enabled: false
+Rails/SaveBang:
+  Enabled: false
+Rails/InverseOf:
+  Enabled: false
+Rails/NotNullColumn:
+  Enabled: false
+Rails/FindEach:
+  Enabled: false
+Rails/FindBy:
+  Enabled: false
+Rails/BulkChangeTable:
+  Enabled: false
