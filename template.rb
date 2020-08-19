@@ -94,12 +94,6 @@ end
 def add_pagy
   gem "pagy"
   after_bundle do
-    inject_into_class "app/controllers/application_controller.rb", ApplicationController do
-      '  include Pagy::Backend'
-    end
-    inject_into_module "app/helpers/application_helper.rb", ApplicationHelper do
-      '  include Pagy::Frontend'
-    end
   end
 end
 
@@ -126,15 +120,18 @@ def add_rubocop
   copy_file ".rubocop.yml"
 end
 
-def add_devise
+def add_user
   gem 'devise', '~> 4.7', '>= 4.7.2'
   gem "devise-i18n"
+  gem "action_policy"
 
   after_bundle do
     # Install Devise
     generate "devise:install"
     generate "devise:controller auth"
     generate "devise:i18n:views auth"
+    # Install Action Policy
+    generate "action_policy:install"
 
     # Configure Devise
     environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
@@ -153,6 +150,8 @@ def add_devise
     gsub_file "config/initializers/devise.rb",
               /  # config.secret_key = .+/,
               "  config.secret_key = Rails.application.credentials.secret_key_base"
+
+    generate "action_policy:policy User"
   end
 end
 
@@ -230,13 +229,6 @@ def add_draper
   gem 'draper'
   after_bundle do
     generate 'draper:install'
-    inject_into_class "app/decorators/application_decorator.rb", ApplicationDecorator do
-      <<-CODE
-      def self.delegate_all
-        raise "Do not use delegate_all it is slow, delegate expicit methods"
-      end
-      CODE
-    end
   end
 end
 
@@ -295,7 +287,7 @@ add_base_gems
   add_rubocop
   add_letter_opener
   add_bullet
-  add_devise if yes?("Devise?")
+  add_user if yes?("Users?")
   add_javascript
   add_sidekiq if yes?("Sidekiq?")
   copy_templates

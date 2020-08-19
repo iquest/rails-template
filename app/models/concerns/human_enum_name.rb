@@ -7,5 +7,6 @@ module HumanEnumName
     def human_enum_name(enum, value)
       human_attribute_name("#{enum}/#{value}")
     end
+    
   end
 end

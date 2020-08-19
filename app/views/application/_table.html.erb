@@ -1,0 +1,44 @@
+<% use_row_link = row_link && !browser.safari? ? true : false %>
+<table class="table table-sm table-striped table-hover" id="<%= id %>">
+  <thead class="thead-dark">
+    <tr>
+      <th class="actions"></th>
+      <% columns.each do |key| %>
+        <% if key.is_a?(Symbol) %>
+          <th><%= model.human_attribute_name(key) %></th>
+        <% elsif key.is_a?(Hash) %>
+          <% key.each_key do |name| %>
+            <th><%= name %></th>
+          <% end %>
+        <% end %>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% collection.each do |object| %>
+    <tr id="<%= dom_id(object) %>" <%= use_row_link ? "class=\"row-link\"".html_safe : nil %>>
+      <td>
+        <% if use_row_link %>
+          <a href="<%= row_link.call(object) %>" class="stretched-link"></a>
+        <% elsif row_link %>
+          <a href="<%= row_link.call(object) %>"></a>
+        <% end %>
+        <span style="position: relative; z-index: 1;">
+        <% links.each do |link| %>
+          <%= object.send(link) %>
+        <% end %>
+        </span>
+      </td>
+      <% columns.each do |key| %>
+        <% if key.is_a?(Symbol) %>
+          <td><%= object.send(key) %></td>
+        <% elsif key.is_a?(Hash) %>
+          <% key.each_value do |attr| %>
+            <td><%= object.send(attr) %></td>
+          <% end %>
+        <% end %>
+      <% end %>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
