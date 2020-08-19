@@ -13,11 +13,11 @@ module ApplicationHelper
                                 links: links, row_link: row_link
   end
 
-  def filter_form_for(q, **opts)
-    search_form_for q,
-                    html: { class: "form-inline mb-4" },
+  def filter_form_for(query, **opts)
+    search_form_for query,
+                    html: {class: "form-inline mb-4"},
                     wrapper: :filter_form,
-                    wrapper_mappings: { boolean: :filter_inline_boolean }, **opts do |f|
+                    wrapper_mappings: {boolean: :filter_inline_boolean}, **opts do |f|
       concat yield f
       concat link_to t('application.reset_filter'), url_for(q: nil, commit: nil), alt: t('application.reset_filter'), class: "btn btn-secondary form-group mt-auto mx-1"
     end
@@ -43,7 +43,7 @@ module ApplicationHelper
       concat fa_icon(icon, text: "&nbsp;".html_safe) if icon
       concat text
     end
-end
+  end
 
   def index_link(model, _body = nil, policy: nil, **options)
     unless policy == false
@@ -163,7 +163,7 @@ end
   end
 
   def app_name
-    ENV.fetch('APP_NAME', Rails.application.class.parent_name)
+    ENV.fetch('APP_NAME', Rails.application.class.module_parent_name)
   end
 
   def current_user

@@ -37,7 +37,7 @@ module IconHelper
     text = options.delete(:text)
     right_icon = options.delete(:right)
     icon = content_tag(:i, nil, options.merge(class: classes))
-    Private.icon_join(icon, text, right_icon)
+    Private.icon_join(icon, text, reverse_order: right_icon)
   end
 
   # Creates an stack set of icon tags given a base icon name, a main icon
@@ -74,7 +74,7 @@ module IconHelper
     text = options.delete(:text)
     right_icon = options.delete(:right)
     stacked_icon = content_tag(:span, safe_join(icons), options.merge(class: classes))
-    Private.icon_join(stacked_icon, text, right_icon)
+    Private.icon_join(stacked_icon, text, reverse_order: right_icon)
   end
 
   def flag_icon(country_code, original_options = {})
@@ -88,7 +88,7 @@ module IconHelper
   module Private
     extend ActionView::Helpers::OutputSafetyHelper
 
-    def self.icon_join(icon, text, reverse_order = false)
+    def self.icon_join(icon, text, reverse_order: false)
       return icon if text.blank?
 
       elements = [icon, ERB::Util.html_escape(text)]

@@ -1,40 +1,23 @@
 # frozen_string_literal: true
 
-class Admin::BaseController < ActionController::Base
-  layout 'admin'
+module Admin
+  class BaseController < ApplicationController
+    layout 'admin'
 
-  protect_from_forgery with: :exception
+    protect_from_forgery with: :exception
 
-  before_action :authenticate_admin!
+    before_action :authenticate_user!
+    before_action :authenticate_admin!
 
-  helper_method :current_admin
+    private
 
-  private
+    def authenticate_admin!
+      return true if current_user&.role?(:admin)
 
-  def authenticate_admin!
-    if current_admin.blank?
-      redirect_to admin_login_path
-      return
+      redirect_to login_path
+      false
     end
 
-    if current_admin.password_digest != session[:current_admin_token]
-      redirect_to admin_login_path, alert: 'Password was changed, please log in again'
-      return
-    end
-  end
-
-  def current_admin
-    @_current_admin ||= session[:current_admin_id] && Administrator.find_by(id: session[:current_admin_id])
-  end
-
-  def admin_sign_in(admin)
-    session[:current_admin_id] = admin.id
-    session[:current_admin_token] = admin.password_digest
-  end
-
-  def admin_sign_out
-    session[:current_admin_id] = nil
-    session[:current_admin_token] = nil
-    @_current_admin = nil
+    alias_method :current_admin, :current_user
   end
 end

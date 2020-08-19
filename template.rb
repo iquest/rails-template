@@ -56,7 +56,6 @@ end
 
 def add_base_gems
   gem 'mini_magick', '~> 4.10', '>= 4.10.1'
-  gem 'sidekiq', '~> 6.0', '>= 6.0.3'
   gem 'image_processing'
   gem 'default_value_for'
   gem "oj"
@@ -66,11 +65,14 @@ def add_base_gems
   gem "dry-types", '~> 1.2'
   gem "puma-heroku"
   gem 'heroku-deflater', group: :production
+  gem "sentry-raven"
 
   gem_group :development do
     gem 'pry-rails'
     gem 'letter_opener'
-    gem 'foreman'
+    gem 'foreman', require: false
+    gem 'overcommit', require: false
+    gem 'magic_frozen_string_literal', require: false
   end
 
   gem_group :development, :test do
@@ -107,10 +109,6 @@ def default_config
   end
 end
 
-def add_sentry
-  gem "sentry-raven"
-end
-
 def add_rubocop
   gem_group :development do
     gem "rubocop"
@@ -128,8 +126,7 @@ def add_user
   after_bundle do
     # Install Devise
     generate "devise:install"
-    generate "devise:controller auth"
-    generate "devise:i18n:views auth"
+    generate "devise:i18n:views", "auth"
     # Install Action Policy
     generate "action_policy:install"
 
@@ -145,6 +142,12 @@ def add_user
     inject_into_class "app/models/user.rb", "User" do
       "  enum :role { basic: 0, admin: 1 }"
       "  default_value_for :role, :basic"
+    end
+
+    gsub_file "config/routes.rb", /devise_for :users/ do
+      <<-ROUTE
+      devise_for :users, path: "auth"
+      ROUTE
     end
 
     gsub_file "config/initializers/devise.rb",
@@ -173,6 +176,7 @@ def copy_templates
 
   copy_file "Procfile"
   copy_file "Procfile.dev"
+  copy_file ".foreman"
 
   directory "app", force: true
   directory "config", force: true
@@ -186,26 +190,32 @@ def add_simple_form
   end
 end
 
-def add_foreman
-  gem_group :development do
-    gem "forman"
-  end
-  copy_file ".foreman"
-end
-
 def add_sidekiq
-  environment "config.active_job.queue_adapter = :sidekiq"
+  gem 'sidekiq', '~> 6.0', '>= 6.0.3'
 
-  inject_into_file "config/routes.rb",
-                   "require 'sidekiq/web'\n\n",
-                   before: "Rails.application.routes.draw do"
+  after_bundle do
+    environment "config.active_job.queue_adapter = :sidekiq"
 
-  content = <<-RUBY
-    authenticate :user, lambda { |u| u.role?(:admin) } do
-      mount Sidekiq::Web => '/sidekiq'
+    inject_into_file "config/routes.rb",
+                    "require 'sidekiq/web'\nSidekiq::Web.set :session_secret, Rails.application.secrets[:secret_key_base]\n\n",
+                    before: "Rails.application.routes.draw do"
+
+    content = <<-RUBY
+      authenticate :user, lambda { |u| u.role?(:admin) } do
+        mount Sidekiq::Web => '/sidekiq'
+      end
+    RUBY
+    insert_into_file "config/routes.rb", "#{content}\n\n", after: "Rails.application.routes.draw do\n"
+
+    procfile = "worker: bundle exec sidekiq -c ${SIDEKIQ_CONCURRENCY:-5}"
+    append_to_file "Procfile" do
+      procfile
     end
-  RUBY
-  insert_into_file "config/routes.rb", "#{content}\n\n", after: "Rails.application.routes.draw do\n"
+
+    append_to_file "Procfile.dev" do
+      procfile
+    end
+  end
 end
 
 def add_seeds
@@ -228,7 +238,7 @@ end
 def add_draper
   gem 'draper'
   after_bundle do
-    generate 'draper:install'
+    generate 'draper:install', '-s'
   end
 end
 
@@ -254,7 +264,7 @@ def add_admin
 
   route <<-ROUTE
     namespace :admin do
-      resource :dashboard, only: [:show]
+      root to: 'dashboard#index'
     end
   ROUTE
 end
@@ -288,11 +298,11 @@ add_base_gems
   add_letter_opener
   add_bullet
   add_user if yes?("Users?")
-  add_javascript
   add_sidekiq if yes?("Sidekiq?")
   copy_templates
   add_sitemap if yes?("Sitemap?")
   add_gitignore
+  add_javascript
   add_admin
   add_seeds
 
@@ -305,6 +315,9 @@ after_bundle do
   # Commit everything to git
 
   git :init
+  run "magic_frozen_string_literal ."
+  run "rubocop --auto-correct"
+  run "overcommit --install"
   git add: "."
   git commit: %{ -m 'Initial commit' }
 

@@ -17,12 +17,11 @@
       <% app_name %>
     <% end %>
   </title>
-  <%= csrf_meta_tags)) %>
-  <%= action_cable_meta_tag)) %>
-  <%= content_for?(:head) ? yield(:head) : '')) %>
+  <%= csrf_meta_tags %>
+  <%= action_cable_meta_tag %>
+  <%= content_for?(:head) ? yield(:head) : '' %>
   <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-  <%= javascript_pack_tag 'ga', 'data-turbolinks-track': 'reload' %>
   <%= favicon_link_tag asset_pack_path("media/images/favicon.ico") %>
 </head>
 <body class="<%= body_class %>">

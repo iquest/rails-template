@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :store_back_location
 
   authorize :user, through: :current_user
-  verify_authorized
+  verify_authorized unless: :devise_controller?
 
   rescue_from ActionPolicy::Unauthorized do |e|
     logger.error "#{e.class} #{e.message} #{e.result.reasons.full_messages}"
