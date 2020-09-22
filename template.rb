@@ -63,6 +63,7 @@ def add_base_gems
   gem 'rails-i18n', '~> 6.0.0'
   gem "dry-core"
   gem "dry-types", '~> 1.2'
+  gem "dry-struct"
   gem "puma-heroku"
   gem 'heroku-deflater', group: :production
   gem "sentry-raven"
