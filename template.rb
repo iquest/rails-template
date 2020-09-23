@@ -3,7 +3,6 @@
 require "fileutils"
 require "shellwords"
 
-
 begin
   require 'byebug' # template debugging
 rescue LoadError
@@ -137,12 +136,22 @@ def add_user
 
     # Create Devise User
     generate :devise, "User",
-            "name",
-            "role:integer"
+             "name",
+             "role:integer"
 
     inject_into_class "app/models/user.rb", "User" do
-      "  enum :role { basic: 0, admin: 1 }"
-      "  default_value_for :role, :basic"
+      <<-CODE
+      enum role: { basic: 0, admin: 1 }
+      default_value_for :role, :basic
+      CODE
+    end
+
+    inject_into_file "app/models/user.rb", before: /^end/ do
+      <<-CODE
+      def role?(role_name)
+        self.role == role_name.to_s
+      end
+      CODE
     end
 
     gsub_file "config/routes.rb", /devise_for :users/ do
@@ -165,6 +174,24 @@ end
 
 def add_javascript
   run "yarn add expose-loader jquery popper.js bootstrap data-confirm-modal local-time"
+
+  inject_into_file "app/javascript/packs/application.js" do
+    <<-CODE
+    const images = require.context('../images', true)
+    const imagePath = (name) => images(name, true)
+
+    import $ from 'jquery';
+    import 'bootstrap';
+    import '../stylesheets/application';
+
+    document.addEventListener('turbolinks:load', () => {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover({html: true, sanitize: false});
+        $('.toast').toast({ autohide: false });
+        $('#toast').toast('show');
+    });
+    CODE
+  end
 end
 
 def remove_sprockets
@@ -198,8 +225,8 @@ def add_sidekiq
     environment "config.active_job.queue_adapter = :sidekiq"
 
     inject_into_file "config/routes.rb",
-                    "require 'sidekiq/web'\nSidekiq::Web.set :session_secret, Rails.application.secrets[:secret_key_base]\n\n",
-                    before: "Rails.application.routes.draw do"
+                     "require 'sidekiq/web'\nSidekiq::Web.set :session_secret, Rails.application.secrets[:secret_key_base]\n\n",
+                     before: "Rails.application.routes.draw do"
 
     content = <<-RUBY
       authenticate :user, lambda { |u| u.role?(:admin) } do
@@ -290,22 +317,22 @@ add_template_repository_to_source_path
 add_base_gems
 
 # after_bundle do
-  set_application_name
-  stop_spring
-  add_draper
-  add_simple_form
-  add_pagy
-  add_rubocop
-  add_letter_opener
-  add_bullet
-  add_user if yes?("Users?")
-  add_sidekiq if yes?("Sidekiq?")
-  copy_templates
-  add_sitemap if yes?("Sitemap?")
-  add_gitignore
-  add_javascript
-  add_admin
-  add_seeds
+set_application_name
+stop_spring
+add_draper
+add_simple_form
+add_pagy
+add_rubocop
+add_letter_opener
+add_bullet
+add_user if yes?("Users?")
+add_sidekiq if yes?("Sidekiq?")
+copy_templates
+add_sitemap if yes?("Sitemap?")
+add_gitignore
+add_javascript
+add_admin
+add_seeds
 
 after_bundle do
   # Migrate

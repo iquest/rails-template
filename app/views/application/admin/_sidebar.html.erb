@@ -1,9 +1,8 @@
 <!--Main Sidebar Container-->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!--Brand Logo-->
-  <%= link_to admin_root_path, class:"brand-link" do
-    concat image_pack_tag 'logo.png', class: 'brand-image img-circle elevation-3'
-    concat '<span class="brand-text font-weight-light">Dashboard</span>'
+  <%= link_to admin_root_path, class:"navbar-brand bg-dark d-flex align-items-center justify-content-center m-0" do
+    concat image_pack_tag 'logo.png', class: 'brand-image', alt: "Logo", style: "height: 2rem;"
   end %>
   <div class="sidebar">
     <!--Sidebar Menu-->
@@ -11,14 +10,12 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-accordion="false" data-widget="treeview" role="menu">
         <li class="nav-item">
           <%= link_to admin_root_path, class: "nav-link #{admin_active_for(admin_root_path, current_path)}" do
-            capture '<i class="nav-icon fas fa-tachometer-alt"/>'
-            capure '<span>Dashboard</span>'
+            fa_icon "tachometer-alt nav-icon", text: "Dashboard"
           end %>
         </li>
         <li class="nav-item">
           <%= link_to "#", class: "nav-link" do
-            capture '<i class="nav-icon fas fa-th"/>'
-            capure '<span>Menu</span>'
+            fa_icon "th nav-icon", text: "Menu"
           end %>
         </li>
       </ul>

@@ -12,11 +12,12 @@
   <% end %>
   <!--Right navbar links-->
   <ul class="navbar-nav ml-auto">
+    <% if current_user %>
     <!--Messages Dropdown Menu-->
     <li class="nav-item dropdown show">
       <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
         <span>
-          <%= current_admin.name %>
+          <%= current_user.name %>
         </span></a>
       <ul class="dropdown-menu dropdown-menu-right">
         <li class="user-header">
@@ -26,5 +27,8 @@
         </li>
       </ul>
     </li>
+    <% else %>
+
+    <% end %>
   </ul>
 </nav>

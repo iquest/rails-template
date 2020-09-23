@@ -14,10 +14,12 @@ module Admin
     def authenticate_admin!
       return true if current_user&.role?(:admin)
 
-      redirect_to login_path
+      redirect_to root_path
       false
     end
 
-    alias_method :current_admin, :current_user
+    def current_admin
+      current_user if current_user.role?(:admin)
+    end
   end
 end

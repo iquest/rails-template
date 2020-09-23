@@ -1,5 +1,0 @@
-# frozen_string_literal: true
-
-class UserDecorator < ApplicationDecorator
-  delegate :email, :name, :role, :role?
-end

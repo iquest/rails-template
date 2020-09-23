@@ -108,8 +108,13 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    return stored_location_for(resource) if stored_location_for(resource) != root_path
+    stored_location = stored_location_for(resource)
+    return stored_location if stored_location
 
-    root_path
+    if current_user.role?(:admin)
+      admin_root_path
+    else
+      root_path
+    end
   end
 end

@@ -1,0 +1,102 @@
+cs:
+  true: Ano
+  false: Ne
+  errors:
+    messages:
+      email: Není platná e-mailová adresa
+      phone: Číslo je ve špatném formátu
+      not_found: Nenalezeno
+      content_type_invalid: "nesprávný typ souboru %{content_type}"
+      file_size_out_of_range: "velikost souboru %{file_size} není v rozsahu"
+      limit_out_of_range: "mimo rozsah [%{min}, %{max}]"
+      image_metadata_missing: "není obrázek"
+      dimension_min_inclusion: "rozměry musí být větší nebo roveny %{width} x %{height} pixelů."
+      dimension_max_inclusion: "rozměry musí být menší nebo rovny %{width} x %{height} pixelů."
+      dimension_width_inclusion: "width is not included between %{min} and %{max} pixel."
+      dimension_height_inclusion: "height is not included between %{min} and %{max} pixel."
+      dimension_width_greater_than_or_equal_to: "width must be greater than or equal to %{length} pixel."
+      dimension_height_greater_than_or_equal_to: "height must be greater than or equal to %{length} pixel."
+      dimension_width_less_than_or_equal_to: "width must be less than or equal to %{length} pixel."
+      dimension_height_less_than_or_equal_to: "height must be less than or equal to %{length} pixel."
+      dimension_width_equal_to: "width must be equal to %{length} pixel."
+      dimension_height_equal_to: "height must be equal to %{length} pixel."
+      aspect_ratio_not_square: "must be a square image"
+      aspect_ratio_not_portrait: "must be a portrait image"
+      aspect_ratio_not_landscape: "must be a landscape image"
+      aspect_ratio_is_not: "must have an aspect ratio of %{aspect_ratio}"
+      aspect_ratio_unknown: "has an unknown aspect ratio"
+  helpers:
+    submit:
+      create: "Vytvořit"
+      submit: "Uložit"
+      update: "Aktualizovat"
+  action_policy:
+    unauthorized: Nemáte oprávnění
+  application:
+    dashboard: Dashboard
+    all: Vše
+    show: Zobrazit %{name}
+    unread: Nepřečtené
+    message: Zpráva
+    mark_read: Označit přečtené
+    back: Zpět
+    empty_collection: Prázdný seznam
+    confirm: Jste si jist?
+    filter: Filtrovat
+    reset_filter: Zrušit filtr
+    save: Uložit
+    edit: Upravit
+    edit_name: 'Upravit %{name}'
+    recalculate: Přepočítat cenu
+    delete: Smazat
+    copy: Duplikovat
+    alerts: Upozornění
+    create_order: Vytvořit zakázku
+    total: Celkem
+    czech_crowns: Kč
+    before_vat: "bez DPH"
+    fail: Akce se nezdařila
+    add: 'Přidat %{name}'
+    summary: Souhrn
+    preview: Náhled
+    pdf: PDF
+    created:
+      m: '%{name} vytořen'
+      f: '%{name} vytvořena'
+      n: '%{name} vytvořeno'
+    saved:
+      m: '%{name} uložen'
+      f: '%{name} uložena'
+      n: '%{name} uloženo'
+    updated:
+      m: '%{name} aktualizován'
+      f: '%{name} aktualizována'
+      n: '%{name} aktualizováno'
+    deleted:
+      m: Smazán %{name}
+      f: Smazána %{name}
+      n: Smazáno %{name}
+    new:
+      m: Nový %{name}
+      f: Nová %{name}
+      n: Nové %{name}
+    sort: Seřadit
+    sort/asc: '%{name} vzestupně'
+    sort/desc: '%{name} sestupně'
+    cancel: "Storno"
+    change: "Změnit"
+    place: "Potvrdit"
+    status_changed: "Stav změněn"
+    menu: Menu
+  time:
+    formats:
+      default: "%d. %m. %Y %H:%M"
+      long: "%A %e. %B %Y %H:%M"
+      short: "%d. %m. %Y"
+      devise:
+        mailer:
+          invitation_instructions:
+            accept_until_format: "%B %d, %Y %I:%M %p"
+  devise:
+    sessions:
+      sign_out: Odhlásit

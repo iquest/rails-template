@@ -25,11 +25,18 @@
   <%= favicon_link_tag asset_pack_path("media/images/favicon.ico") %>
 </head>
 <body class="<%= body_class %>">
-  <main>
-    <div class="container">
-      <%= yield %>
-    </div>
+  <main class="wrapper">
+    <%= render 'application/header' %>
+      <div class="content-wrapper">
+        <section class="content-messages">
+          <%= render 'application/flash_messages' %>
+        </section>
+        <section class="content-header">
+        </section>
+        <section class="content">
+          <%= yield %>
+        </section>
+      </div>
   </main>
-  </body>
-
+</body>
 </html>

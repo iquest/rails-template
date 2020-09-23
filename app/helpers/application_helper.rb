@@ -167,6 +167,10 @@ module ApplicationHelper
   end
 
   def current_user
-    controller.send(:current_user).decorate
+    controller.send(:current_user)&.decorate
+  end
+
+  def current_admin
+    controller.send(:current_admin)&.decorate
   end
 end

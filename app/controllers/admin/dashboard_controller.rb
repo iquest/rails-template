@@ -3,7 +3,7 @@
 module Admin
   class DashboardController < Admin::BaseController
     def index
-      authorize!
+      authorize! self, with: Admin::DashboardPolicy
     end
   end
 end
